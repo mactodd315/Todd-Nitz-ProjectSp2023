@@ -1,0 +1,40 @@
+## backup files
+*~
+
+__pycache__/
+*.py[cod]
+
+## vs code
+.vscode/*
+
+## output plots
+*.pdf
+*.png
+# but not if they are docs figures
+!docs/fig/*.pdf
+!docs/fig/*.png
+!docs/fig/*/*.pdf
+!docs/fig/*/*.png
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+## latex auxiliary files
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.bcf
+*.bbl
+*.blg
+*.run.xml
+*.nav
+*.snm
+*.vrb
+*.fdb_latexmk
+*.synctex.gz
+
+
