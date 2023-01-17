@@ -18,23 +18,3 @@ __pycache__/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-
-## latex auxiliary files
-*.aux
-*.lof
-*.log
-*.lot
-*.fls
-*.out
-*.toc
-*.bcf
-*.bbl
-*.blg
-*.run.xml
-*.nav
-*.snm
-*.vrb
-*.fdb_latexmk
-*.synctex.gz
-
-
