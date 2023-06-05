@@ -1,64 +1,54 @@
+"""
+This file generates a posterior for the amplitude estimation of a cosine function
+"""
+
+
 import numpy as np
+from scipy.special import logsumexp
 import matplotlib.pyplot as plt
-from simulator import *
-import time
 
-# evaluation time goes like np1*np2*nsim
-n_prior1 = 1000 # spread phse
-n_prior2 = 2000 # zooming phase
-n_sim = 500
+def generate_posterior(theta, observed):
+	# initiallizing
+	n_points = observed.size
+	t = np.linspace(0,2*np.pi,n_points)
+	n_pixels = theta.size
 
-#generates "x_obs"
-A = np.random.ranf()*15
-B = np.random.ranf()*10
-x_obs,data_obs = simulate(A,B, n = n_sim)
-plt.plot(x_obs, data_obs)
-plt.show()
+	log_prior = np.zeros(n_pixels)
+
+	log_likelihood = np.ones(n_pixels)
+
+	for i in range(n_pixels):
+		sim = theta[i]*np.cos(1*t)
+		x = observed - sim
+		log_likelihood[i] = np.sum(-x**2/2)
+		#for n in range(n_points):
+		#	#prob_xn_given_theta = list(np.around(np.random.normal(size = n_draws),1)).count(round(x[n],1))/n_draws
+		#	prob_x_given_theta = (2*np.pi)**(-2)*np.exp(-x[n]**2/2)
+		#	likelihood[i] *= prob_xn_given_theta
+	#print("Done.")
+	log_posterior = log_likelihood+log_prior
+	norm = logsumexp(log_posterior)
+	log_posterior_norm = log_posterior-norm
+	#posterior_norm = list(posterior.copy())
+	return np.exp(log_posterior_norm)
 
 
 
-#initial guess
-B = float(input("Enter Guess for Frequency: "))
-start = time.time()
-
-#starts initial spread of values for prior (to be updated later) and compares to wider threshold
-threshold = 3
-posterior =[]
-theta = np.linspace(B/2,3*B/2,n_prior1)
-for each in theta:
-    x_sim,data_sim = simulate(A, each, n = n_sim,noise = False)
-    norm = [abs(data_obs[i]-data_sim[i]) for i in range(n_sim)]
-    if np.average(norm) < threshold:
-        posterior.append(each)
-
-round1 = time.time()-start
-print("Time for Phase 1 Analysis: ", round(round1,3), " seconds")
-
-#samples theta from p(theta), taken from 1st posterior, compares distance to x_obs with narrower threshold 
-threshold = .9
-new_B = np.average(posterior)
-theta = np.random.normal(loc = new_B, size = n_prior2)
-posterior = []
-for each in theta:
-    x_sim,data_sim = simulate(A, each, n = n_sim,noise = False)
-    norm = [abs(data_obs[i]-data_sim[i]) for i in range(n_sim)]
-    if np.average(norm) < threshold:
-        posterior.append(each)
-    
-round2 = time.time()-start
-print("Time for Phase 2 Analysis: ", round(round2,3), " seconds")
-print("Number of Accepted Parameters: ",len(posterior))
-
-# plots histogram indicating probable parameter and uses median to fit the curve
-fig, (p1,p2) = plt.subplots(1,2,figsize=(12, 6))
-
-p1.hist(posterior)
-p1.set_xlabel('B - Frequency')
-
-p2.plot(x_obs,data_obs, label = 'Observed')
-fit = np.median(posterior)
-x_fit,data_fit = simulate(A,fit, noise = False)
-p2.plot(x_fit, data_fit, label = 'Fit -- Paramters: A={:.2f} (fixed), B={:.2f}'.format(A, fit))
-p2.legend()
-
-plt.show()
+if __name__ == "__main__":
+	# Analysis
+	n_pixels = 1000
+	true_p = 5
+	theta = np.linspace(0,10,n_pixels)
+	log_posterior = generate_posterior(true_p,theta)
+	theta_est = theta[log_posterior.argmax()]
+	print(np.exp(log_posterior[log_posterior.argmax()-50:log_posterior.argmax()+50]))
+	print("Analyzing...\n")
+	print("Pixel Size: {}".format(10/n_pixels))
+	print("Estimated Amplitude: {:}".format(theta_est))
+	norm = logsumexp(log_posterior)
+	log_posterior_norm = log_posterior-norm
+	percent_thetas = theta[np.searchsorted(np.exp(log_posterior_norm).cumsum(),[.25,.75])]
+	print(percent_thetas)
+	print("Actual Amplitude: {:}\tDifference: {:}".format(true_p, theta_est-true_p))
+	#plt.plot(theta,posterior_norm)
+	#plt.show()
