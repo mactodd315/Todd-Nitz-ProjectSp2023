@@ -9,7 +9,7 @@ import pycbc.noise
 
 def sample_noise(length):
     # samples noise from a pre-generated noise file and returns it as a tensor of inputed length
-    f = h5py.File('/home/mrtodd/Todd-Nitz-ProjectSp2023/noise.hdf5','r')
+    f = h5py.File('noise.hdf5','r')
     grp = f["noise"]
     dset = grp["noise"]
     noise = dset[0:length,]
@@ -21,7 +21,7 @@ def sample_noise(length):
     return noise
 
 def generate_noise():
-    f = h5py.File('/home/mrtodd/Todd-Nitz-ProjectSp2023/noise.hdf5','w')
+    f = h5py.File('noise.hdf5','w')
 
     flow = 30.0
     delta_f = 1.0/16

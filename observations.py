@@ -6,33 +6,20 @@ import random
 
 def sample_observations(length=1):
     # samples observations from a pre-generated noise file and returns it as a tensor of inputed length
-    f2 = h5py.File('/home/mrtodd/Todd-Nitz-ProjectSp2023/observations.hdf5','r')
+    f2 = h5py.File('observations.hdf5','r')
     grp = f2["waveforms"]
-    list_of_waveforms = []
-    list_of_parameters = []
+    parameters = []
+    list_of_keys = []
     for each in grp.keys():
-        if length>0:
-            dset = grp[each]
-            parameters = dset.name
-            parameters = parameters[11:].split(',')
-            parameters = [float(each) for each in parameters]
-            list_of_waveforms.append(dset[:,])
-            list_of_parameters.append(parameters)
-        length-=1
-#     f = open(filename, "r")
-#     f1 = open(filename2, "r")
-#     list_of_tensors = []
-#     parameters = []
-#     for each_line in f:
-#         list_of_tensors.append(torch.as_tensor(np.fromstring(each_line, sep = ' ')))
-#     for each_line in f1:
-#         parameters.append(torch.as_tensor(np.fromstring(each_line, sep = ' ')))
-    
-#     index_list = np.arange(0,length)
-#     observations = [list_of_tensors[i] for i in index_list]
-#     chosen_parameters = [parameters[i] for i in index_list]
-    
-    return list_of_waveforms, list_of_parameters
+        list_of_keys.append(each)
+    key = random.choice(list_of_keys)
+    dset = grp[key]
+    parameters = dset.name
+    parameters = parameters[11:].split(',')
+    parameters = [float(each) for each in parameters]
+    waveform = dset[:,]
+       
+    return waveform, parameters
 
 
 def generate_observations(number = 1000):
