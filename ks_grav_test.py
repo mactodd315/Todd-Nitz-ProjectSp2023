@@ -122,6 +122,8 @@ if __name__ == "__main__":
     dset.attrs["N_Simulations"] = num_simulations
     dset.attrs["Sample Number"] = samples
     dset.attrs["N of Intervals"] = n_intervals
+    dset.attrs["name"] = 'FTI'+sample_parameter+str(num_simulations)
+    f.close()
 
 
      
