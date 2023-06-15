@@ -74,25 +74,26 @@ if __name__ == "__main__":
     samples = 100
     
     #sample_parameter = input("Parameter to Vary: ")
-    sample_parameter = 'inclination'
+    sample_parameter = 'distance'
 
     if sample_parameter == 'distance':
         #distance parameter
-        print("Sampling Distance parameters.")
+        print("Sampling Inclination parameters.")
         observations, true_parameters = sample_observations(length = samples,filename='/home/mrtodd/Todd-Nitz-ProjectSp2023/observations_vdistance.hdf5')
-        bounds = [0.1,50.0]
-        theta =  np.linspace(bounds[0],bounds[1],n_pixels)
+        bounds = [.1,50.0]
+        theta = np.linspace(bounds[0],bounds[1],n_pixels)
+        counts = [get_counts(sbi_posterior, each, bounds, n_pixels=n_pixels) for each in observations]
         pixelwidth = (bounds[1]-bounds[0])/n_pixels
         for i in range(n_intervals-1):
             ci = credible_intervals[i]
             print("Evaluating credible interval: ", ci)
             trues = 0
             for j in range(samples):
-                counts = get_counts(sbi_posterior, observations[j], bounds, n_pixels=n_pixels)*pixelwidth
+                posterior = counts[j]*pixelwidth
                 if true_in_interval(ci, theta, posterior, true_parameters[j][1]):
                     trues+=1
             fraction_true_in_interval[i] = trues/samples
-    
+
     elif sample_parameter == 'inclination':
         #inclination parameter
         print("Sampling Inclination parameters.")
