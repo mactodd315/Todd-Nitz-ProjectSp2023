@@ -46,7 +46,7 @@ def true_in_interval(interval_width, theta, counts, true_parameter):
 
 
 if __name__ == "__main__":
-    num_simulations = 1000000
+    num_simulations = 10000
     num_workers = 1
     n_pixels = 50
                        
@@ -68,60 +68,63 @@ if __name__ == "__main__":
 
         
     #generate trues interval array (y-axis of pp test)
-    n_intervals = 21
+    n_intervals = 100
     credible_intervals = np.linspace(0,1,n_intervals)
     fraction_true_in_interval = np.zeros(n_intervals)
     samples = 100
     
-    #sample_parameter = input("Parameter to Vary: ")
-    sample_parameter = 'distance'
-
+    sample_parameter = input("Parameter to Vary: ")
+    
     if sample_parameter == 'distance':
         #distance parameter
-        print("Sampling Inclination parameters.")
-        observations, true_parameters = sample_observations(length = samples,filename='/home/mrtodd/Todd-Nitz-ProjectSp2023/observations_vdistance.hdf5')
-        bounds = [.1,50.0]
-        theta = np.linspace(bounds[0],bounds[1],n_pixels)
-        counts = [get_counts(sbi_posterior, each, bounds, n_pixels=n_pixels) for each in observations]
+        print("Sampling Distance parameters.")
+        observations, true_parameters = sample_observations(length = samples,filename='observations_vdistance.hdf5')
+        bounds = [0.1,50.0]
+        theta =  np.linspace(bounds[0],bounds[1],n_pixels)
         pixelwidth = (bounds[1]-bounds[0])/n_pixels
         for i in range(n_intervals-1):
             ci = credible_intervals[i]
             print("Evaluating credible interval: ", ci)
             trues = 0
             for j in range(samples):
-                posterior = counts[j]*pixelwidth
-                if true_in_interval(ci, theta, posterior, true_parameters[j][1]):
+                counts = get_counts(sbi_posterior, observations[j], bounds, n_pixels=n_pixels)*pixelwidth
+                if true_in_interval(ci, theta, counts, true_parameters[j][1]):
                     trues+=1
             fraction_true_in_interval[i] = trues/samples
-
+    
     elif sample_parameter == 'inclination':
         #inclination parameter
         print("Sampling Inclination parameters.")
-        observations, true_parameters = sample_observations(length = samples,filename='/home/mrtodd/Todd-Nitz-ProjectSp2023/observations_vinclination.hdf5')
+        observations, true_parameters = sample_observations(length = samples,filename='observations_vinclination.hdf5')
         bounds = [0,np.pi/2]
-        theta = np.linspace(bounds[0],bounds[1],n_pixels)
-        counts = [get_counts(sbi_posterior, each, bounds, n_pixels=n_pixels) for each in observations]
+        theta =  np.linspace(bounds[0],bounds[1],n_pixels)
         pixelwidth = (bounds[1]-bounds[0])/n_pixels
         for i in range(n_intervals-1):
             ci = credible_intervals[i]
             print("Evaluating credible interval: ", ci)
             trues = 0
             for j in range(samples):
-                posterior = counts[j]*pixelwidth
-                if true_in_interval(ci, theta, posterior, true_parameters[j][0]):
+                counts = get_counts(sbi_posterior, observations[j], bounds, n_pixels=n_pixels)*pixelwidth
+                if true_in_interval(ci, theta, counts, true_parameters[j][0]):
                     trues+=1
             fraction_true_in_interval[i] = trues/samples
     else:
         print("Not a parameter.")
     fraction_true_in_interval[-1] = 1
 
-    f = h5py.File("/home/mrtodd/Todd-Nitz-ProjectSp2023/temp_ks_test_results2.hdf5", "a")
+    f = h5py.File("ks_test_results.hdf5", "a")
 
-    grp = f.create_group["pp_tests"]
+    grp = f.create_group("pp_tests")
     dset = grp.create_dataset("FTI"+sample_parameter+str(num_simulations), data = fraction_true_in_interval)
     dset.attrs["N_Simulations"] = num_simulations
     dset.attrs["Sample Number"] = samples
     dset.attrs["N of Intervals"] = n_intervals
-    dset.attrs["name"] = 'FTI'+sample_parameter+str(num_simulations)
+    dset.attrs["name"] = "FTI"+sample_parameter+str(num_simulations)
+    dset.attrs["sample parameter"] = sample_parameter
     f.close()
+
+
+     
+
+    
     
