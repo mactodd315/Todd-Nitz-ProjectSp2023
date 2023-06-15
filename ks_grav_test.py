@@ -46,7 +46,7 @@ def true_in_interval(interval_width, theta, counts, true_parameter):
 
 
 if __name__ == "__main__":
-    num_simulations = 10000
+    num_simulations = 1000000
     num_workers = 1
     n_pixels = 50
                        
@@ -115,14 +115,15 @@ if __name__ == "__main__":
         print("Not a parameter.")
     fraction_true_in_interval[-1] = 1
 
-    f = h5py.File("/home/mrtodd/Todd-Nitz-ProjectSp2023/ks_test_results.hdf5", "a")
+    f = h5py.File("/home/mrtodd/Todd-Nitz-ProjectSp2023/temp_ks_test_results2.hdf5", "a")
 
-    grp = f["pp_tests"]
+    grp = f.create_group["pp_tests"]
     dset = grp.create_dataset("FTI"+sample_parameter+str(num_simulations), data = fraction_true_in_interval)
     dset.attrs["N_Simulations"] = num_simulations
     dset.attrs["Sample Number"] = samples
     dset.attrs["N of Intervals"] = n_intervals
-
+    dset.attrs["name"] = "FTI"+sample_parameter+str(num_simulations)
+    f.close()
 
      
 
