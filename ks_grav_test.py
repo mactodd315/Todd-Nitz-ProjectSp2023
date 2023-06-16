@@ -46,7 +46,7 @@ def true_in_interval(interval_width, theta, counts, true_parameter):
 
 
 if __name__ == "__main__":
-    num_simulations = 10000
+    num_simulations = 1000
     num_workers = 1
     n_pixels = 50
                        
@@ -68,12 +68,13 @@ if __name__ == "__main__":
 
         
     #generate trues interval array (y-axis of pp test)
-    n_intervals = 100
+    n_intervals = 21
     credible_intervals = np.linspace(0,1,n_intervals)
     fraction_true_in_interval = np.zeros(n_intervals)
     samples = 100
     
-    sample_parameter = input("Parameter to Vary: ")
+    #sample_parameter = input("Parameter to Vary: ")
+    sample_parameter = 'inclination'
     
     if sample_parameter == 'distance':
         #distance parameter
@@ -82,13 +83,15 @@ if __name__ == "__main__":
         bounds = [0.1,50.0]
         theta =  np.linspace(bounds[0],bounds[1],n_pixels)
         pixelwidth = (bounds[1]-bounds[0])/n_pixels
+
+        posterior = [get_counts(sbi_posterior, each, bounds, n_pixels=n_pixels)*pixelwidth for each
+                     in observations]
         for i in range(n_intervals-1):
             ci = credible_intervals[i]
             print("Evaluating credible interval: ", ci)
             trues = 0
             for j in range(samples):
-                counts = get_counts(sbi_posterior, observations[j], bounds, n_pixels=n_pixels)*pixelwidth
-                if true_in_interval(ci, theta, counts, true_parameters[j][1]):
+                if true_in_interval(ci, theta, posterior[j], true_parameters[j][1]):
                     trues+=1
             fraction_true_in_interval[i] = trues/samples
     
@@ -99,13 +102,15 @@ if __name__ == "__main__":
         bounds = [0,np.pi/2]
         theta =  np.linspace(bounds[0],bounds[1],n_pixels)
         pixelwidth = (bounds[1]-bounds[0])/n_pixels
+
+        posterior = [get_counts(sbi_posterior, each, bounds, n_pixels=n_pixels)*pixelwidth for each
+                     in observations]
         for i in range(n_intervals-1):
             ci = credible_intervals[i]
             print("Evaluating credible interval: ", ci)
             trues = 0
             for j in range(samples):
-                counts = get_counts(sbi_posterior, observations[j], bounds, n_pixels=n_pixels)*pixelwidth
-                if true_in_interval(ci, theta, counts, true_parameters[j][0]):
+                if true_in_interval(ci, theta, posterior[j], true_parameters[j][0]):
                     trues+=1
             fraction_true_in_interval[i] = trues/samples
     else:
@@ -114,7 +119,7 @@ if __name__ == "__main__":
 
     f = h5py.File("ks_test_results.hdf5", "a")
 
-    grp = f.create_group("pp_tests")
+    grp = f["pp_tests"]
     dset = grp.create_dataset("FTI"+sample_parameter+str(num_simulations), data = fraction_true_in_interval)
     dset.attrs["N_Simulations"] = num_simulations
     dset.attrs["Sample Number"] = samples
