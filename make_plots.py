@@ -6,33 +6,29 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import kstest
 
-linestyle_dict = {"10000": ":", "100000": "--", "1000000": "-"}
+linestyle_dict = {"1000": ":","10000": "-.", "100000": "--", "1000000": "-"}
 color_dict = {'inclination':'g', 'distance':'b'}
 
-def annotate_pvalue(credible_interval,dset):
-    y_value = dset[-9]
-    x_value = credible_interval[-9]
-    plt.annotate("{:.3e}".format(kstest(dset,"uniform").pvalue),xy=(x_value,y_value),
-                 xycoords = 'data', xytext = (1.5,-15), textcoords = 'offset points',
-                 arrowprops = {'arrowstyle': 'simple'})
+# def annotate_pvalue(credible_interval,dset):
+#     y_value = dset[round(dset.size/2)]
+#     x_value = credible_interval[round(dset.size/2)]
+#     plt.annotate("{:.3e}".format(kstest(dset,"uniform").pvalue),xy=(x_value,y_value),
+#                  xycoords = 'data', xytext = (-15,-15), textcoords = 'offset points',
+#                  arrowprops = {'arrowstyle': 'simple'})
 
 
 def makeplots(dsets):
     group = dsets[0].parent.name
     if group == "/pp_tests":
-        n_intervals = dsets[0].size
-        credible_interval = np.linspace(0,1,n_intervals)
         for each_dset in dsets:
+            n_intervals = each_dset.size
+            credible_interval = np.linspace(0,1,n_intervals)
             dset = each_dset[:,]
             sample_parameter = each_dset.attrs['sample parameter']
             n_simulations = str(each_dset.attrs['N_Simulations'])
-            if sample_parameter == 'inclination':
-                label = n_simulations
-            else:
-                label = None
+            pvalue = "{:.2e}".format(kstest(dset,"uniform").pvalue)
             plt.plot(credible_interval,dset, color = color_dict[sample_parameter],
-                ls=linestyle_dict[n_simulations], label = label)
-            annotate_pvalue(credible_interval,dset)
+                ls=linestyle_dict[n_simulations], label = n_simulations+", pval: "+pvalue)
         plt.legend()
         plt.grid()
         plt.show()
