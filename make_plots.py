@@ -19,6 +19,7 @@ color_dict = {'inclination':'g', 'distance':'b'}
 
 def makeplots(dsets):
     group = dsets[0].parent.name
+    plt.figure(figsize=(10,6))
     if group == "/pp_tests":
         for each_dset in dsets:
             n_intervals = each_dset.size
@@ -31,7 +32,7 @@ def makeplots(dsets):
                 ls=linestyle_dict[n_simulations], label = n_simulations+", pval: "+pvalue)
         plt.legend()
         plt.grid()
-        plt.show()
+        plt.savefig('2param_pptest.png')
 
 
 if __name__ =="__main__":
