@@ -4,8 +4,10 @@ from pycbc.waveform import get_td_waveform
 from noise import sample_noise
 import random
 
-def sample_observations(length=1, filename='observations.hdf5'):
+def sample_observations(length=1, filename='observations.hdf5', source='local'):
     # samples observations from a pre-generated noise file and returns it as a tensor of inputed length
+    if source=='cluster':
+        filename = 'home/mrtodd/Todd-Nitz-ProjectSp2023/datafiles'+filename
     f2 = h5py.File(filename,'r')
     grp = f2["waveforms"]
     list_of_keys = []

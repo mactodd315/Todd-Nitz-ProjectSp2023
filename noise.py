@@ -7,9 +7,12 @@ import numpy as np
 import pycbc.psd
 import pycbc.noise
 
-def sample_noise(length):
+def sample_noise(length, source='local'):
+    if source=='cluster':
+        f = h5py.File('/home/mrtodd/Todd-Nitz-ProjectSp2023/datafiles/noise.hdf5','r')
     # samples noise from a pre-generated noise file and returns it as a tensor of inputed length
-    f = h5py.File('/home/mrtodd/Todd-Nitz-ProjectSp2023/datafiles/noise.hdf5','r')
+    else:
+        f = h5py.File('datafiles/noise.hdf5','r')
     grp = f["noise"]
     dset = grp["noise"]
     noise = dset[0:length,]
