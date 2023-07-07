@@ -2,8 +2,8 @@
 *~
 
 ## datafiles
-.hdf
-.hdf5
+*.hdf
+*.hdf5
 
 __pycache__/
 *.py[cod]
