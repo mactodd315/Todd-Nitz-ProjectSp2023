@@ -1,0 +1,12 @@
+executable = /home/mrtodd/2d_FPES/plots/make_plots.sh
+arguments = /home/mrtodd/2d_FPES/plots/make_plots.py 100
+error = /home/mrtodd/errorfiles/make_plots.err
+log = /home/mrtodd/logfiles/make_plots.log
+output = /home/mrtodd/outputfiles/make_plots.out
+
+request_cpus = 10
+request_memory = 20 GB
+
+Requirements = regexp("CRUSH", TARGET.name)
+
+queue

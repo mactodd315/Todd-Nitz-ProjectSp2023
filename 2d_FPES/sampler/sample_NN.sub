@@ -1,0 +1,12 @@
+executable = /home/mrtodd/2d_FPES/sample_nn/sample_NN.sh
+arguments = /home/mrtodd/2d_FPES/sample_nn/sample_NN.py 100
+error = /home/mrtodd/errorfiles/sample_NN.err
+log = /home/mrtodd/logfiles/sample_NN.log
+output = /home/mrtodd/outputfiles/sample_NN.out
+
+request_cpus = 10
+request_memory = 20 GB
+
+Requirements = regexp("CRUSH", TARGET.name)
+
+queue

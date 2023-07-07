@@ -1,0 +1,12 @@
+executable = /home/mrtodd/2d_FPES/training_data/create_training_samples.sh
+arguments = /home/mrtodd/2d_FPES/training_data/injection.ini 1000000
+error = /home/mrtodd/errorfiles/create_training_samples.err
+log = /home/mrtodd/logfiles/create_training_samples.log
+output = /home/mrtodd/outputfiles/create_training_samples.out
+
+request_cpus = 10
+request_memory = 50 GB
+
+Requirements = regexp("CRUSH", TARGET.name)
+
+queue
